@@ -6,7 +6,7 @@
   <meta name="description" content="Enter your date of birth, to see your life in months. Based on the post by Tim Urban, from Wait by Why.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="months-favicon.png" sizes="32x32">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
   <link rel="stylesheet" href="your-life.css">
 </head>
 <body>
@@ -48,10 +48,10 @@
   </form>
   <ol class="chart months group">
     <div class="life-tracker" aria-live="polite">
-      <div class="tracker-value"><span id="life-count">0</span> <span id="life-unit">months</span></div>
-      <div class="tracker-sub">lived so far</div>
+      <div class="tracker-value"><span id="life-count">0</span> <span id="life-unit">months</span> / <span id="life-total">0</span></div>
+      <div class="tracker-sub" id="life-sub">lived so far</div>
       <div class="tracker-percent"><span id="life-percent">0</span>% of life gone</div>
-      <div class="tracker-selected" id="life-selected">Selected: —</div>
+      <div class="tracker-selected" id="life-selected">Selected: 0 of 0</div>
     </div>
     <li></li>
     <li></li>
@@ -1143,6 +1143,7 @@
         <option value="" selected disabled>Choose format</option>
         <option value="csv">CSV</option>
         <option value="json">JSON</option>
+        <option value="xlsx">XLSX</option>
         <option value="xlsm">XLSM</option>
       </select>
     </p>
