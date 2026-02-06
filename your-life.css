@@ -8,49 +8,77 @@ html {
   box-sizing: inherit;
 }
 body {
-  font-family: Helvetica, Ariel, sans-serif;
-  margin: 8px; /* for page padding on mobile */
+  font-family: "Source Sans 3", "Noto Sans", sans-serif;
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(circle at 10% 10%, #f7f1e9 0%, #f2f7f6 45%, #f7f1e9 100%);
+  min-height: 100vh;
+}
+
+/**
+ * Theme
+ */
+:root {
+  --ink: #1f1b16;
+  --muted: #7c7165;
+  --accent: #d04a2f;
+  --accent-dark: #b33a25;
+  --panel: #ffffff;
+  --border: #d8cfc6;
 }
 
 /**
  * Common Page Styles
  */
 .title-box {
-  padding-top: 1rem;
-  text-align: center;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 2.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
 }
 .title {
   display: inline;
-  color: #000080;
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.title-left {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
 .unitbox-label {
   display: inline;
 }
 .unitbox {
   display: inline;
-  font-family: sans-serif;
+  font-family: inherit;
   line-height: 1.125;
   padding: 0 0.75em 0 0;
   margin: 0;
-  color: #CB0509;
-  font-size: 2em;
+  color: var(--accent);
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
   font-weight: 700;
   border-radius: 0;
   border-left: none;
   border-top: none;
   border-right: none;
-  border-bottom: 1px solid #CB0509;
+  border-bottom: 2px solid var(--accent);
 
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
-  background-color: #fff;
-	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23CB0509%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-	background-repeat: no-repeat, repeat;
-	/* arrow icon position (1em from the right, 50% vertical) , then gradient position*/
-	background-position: right 0em top 50%, 0 0;
-	/* icon size, then gradient */
-  background-size: .45em auto, 100%;
+  background-color: transparent;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d04a2f%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 0em top 55%;
+  background-size: .45em auto;
 }
 /* Hide arrow icon in IE browsers */
 .unitbox::-ms-expand {
@@ -64,10 +92,12 @@ body {
 
 .dob {
   text-align: center;
+  padding: 1.5rem 1rem 0;
 }
 .instruction {
   font-size: 0.9em;
   margin-bottom: 0.3rem;
+  color: var(--muted);
 }
 .month {
   padding: 1.25px;
@@ -83,9 +113,27 @@ input:required:invalid.touched {
 }
 .chart {
   position: relative;
-  margin: 4rem auto 2rem auto;
+  margin: 3rem auto 2.5rem auto;
   padding: 0;
   list-style-type: none;
+}
+.chart li {
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+.chart li:hover {
+  transform: scale(1.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(208, 74, 47, 0.15);
+}
+.chart li.is-selected {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 2px rgba(179, 58, 37, 0.35);
+  transform: scale(1.08);
+}
+.chart li:focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 1px;
 }
 .x-axis {
   position: absolute;
@@ -96,18 +144,64 @@ input:required:invalid.touched {
 .x-axis .markers,
 .y-axis .markers {
   font-size: 0.8rem;
-  color: black;
+  color: var(--ink);
 }
 .credits {
   font-size: 0.8rem;
   text-align: center;
-  color: #aaaaaa;
-  padding-bottom: 1rem;
+  color: var(--muted);
+  padding: 1rem 1rem 2rem;
 }
 .credits a:link,
 .credits a:hover,
 .credits a:visited {
-  color: #aaaaaa;
+  color: var(--muted);
+}
+.quote-box {
+  max-width: 320px;
+  text-align: right;
+  color: var(--muted);
+}
+.quote-text {
+  font-style: italic;
+  margin: 0 0 0.25rem 0;
+}
+.quote-author {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.life-tracker {
+  position: absolute;
+  right: -13rem;
+  top: 0;
+  width: 12rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.tracker-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.tracker-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.tracker-percent {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+.tracker-selected {
+  font-size: 0.75rem;
+  margin-top: 0.6rem;
+  color: var(--muted);
 }
 .export-label {
   margin-right: 0.25rem;
@@ -115,9 +209,9 @@ input:required:invalid.touched {
 .export-select {
   font-family: inherit;
   font-size: 0.9em;
-  color: #666666;
+  color: var(--muted);
   background-color: #ffffff;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--border);
   padding: 0.1rem 0.25rem;
 }
 
@@ -150,6 +244,10 @@ input:required:invalid.touched {
   float: left;
   transform: rotate(45deg);
 }
+.years > li:hover,
+.years > li.is-selected {
+  transform: rotate(45deg) scale(1.08);
+}
 
 /* MONTHS */
 .months {
@@ -176,11 +274,11 @@ input:required:invalid.touched {
   float: left;
 }
 .weeks--x-label {
-  color: #000080;
+  color: var(--ink);
   font-size: 1.25rem;
 }
 .weeks--y-label {
-  color: #000080;
+  color: var(--ink);
   transform: rotate(-90deg);
   font-size: 1.25rem;
   position: absolute;
@@ -267,6 +365,22 @@ input:required:invalid.touched {
   clip: rect(0 0 0 0);
   height: 1px; width: 1px;
   margin: -1px; padding: 0; border: 0;
+}
+
+@media (max-width: 900px) {
+  .title-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .quote-box {
+    text-align: left;
+    max-width: 100%;
+  }
+  .life-tracker {
+    position: static;
+    width: auto;
+    margin: 1rem auto 0;
+  }
 }
 
 /**

@@ -8,9 +8,17 @@
     unitboxEl = document.getElementById('unitbox'),
     unitText = document.querySelector('.unitbox-label').textContent.toLowerCase(),
     items = document.querySelectorAll('.chart li'),
+    chartEl = document.querySelector('.chart'),
     exportEl = document.getElementById('export-format'),
+    trackerCountEl = document.getElementById('life-count'),
+    trackerUnitEl = document.getElementById('life-unit'),
+    trackerPercentEl = document.getElementById('life-percent'),
+    trackerSelectedEl = document.getElementById('life-selected'),
+    quoteTextEl = document.getElementById('quote-text'),
+    quoteAuthorEl = document.getElementById('quote-author'),
+    selectedItem = null,
     itemCount,
-    COLOR = 'red',
+    COLOR = '#d04a2f',
     KEY = {
       UP: 38,
       DOWN: 40
@@ -29,11 +37,17 @@
   if (exportEl) {
     exportEl.addEventListener('change', _handleExportChange);
   }
+  if (chartEl) {
+    chartEl.addEventListener('click', _handleChartClick);
+    chartEl.addEventListener('keydown', _handleChartKeydown);
+  }
 
   // Ensure the month is unselected by default.
   monthEl.selectedIndex = -1;
+  _setItemMetadata();
 
   // Load default values
+  _loadQuote();
   _loadStoredValueOfDOB();
 
   // Event Handlers
@@ -56,6 +70,7 @@
     } else {
       _repaintItems(0);
     }
+    _updateTracker(_dateIsValid() ? itemCount : 0);
   }
 
   function _handleUpdown(e) {
@@ -149,6 +164,7 @@
     var DOB = JSON.parse(localStorage.getItem('DOB'));
 
     if (!DOB) {
+      _updateTracker(0);
       return;
     }
 
@@ -164,6 +180,104 @@
       dayEl.value = DOB.day
     }
     _handleDateChange();
+  }
+
+  function _setItemMetadata() {
+    for (var i = 0; i < items.length; i++) {
+      var index = i + 1;
+      items[i].setAttribute('data-index', index);
+      items[i].setAttribute('tabindex', '0');
+      items[i].setAttribute('role', 'button');
+      items[i].setAttribute('aria-label', _buildItemLabel(index));
+    }
+  }
+
+  function _buildItemLabel(index) {
+    var singular = 'Unit';
+    if (unitText === 'weeks') {
+      singular = 'Week';
+    } else if (unitText === 'months') {
+      singular = 'Month';
+    } else if (unitText === 'years') {
+      singular = 'Year';
+    }
+    return singular + ' ' + index;
+  }
+
+  function _handleChartClick(e) {
+    if (e.target && e.target.tagName === 'LI') {
+      _selectItem(e.target);
+    }
+  }
+
+  function _handleChartKeydown(e) {
+    if (!e.target || e.target.tagName !== 'LI') {
+      return;
+    }
+    var key = e.keyCode || e.which;
+    if (key === 13 || key === 32) {
+      e.preventDefault();
+      _selectItem(e.target);
+    }
+  }
+
+  function _selectItem(item) {
+    if (selectedItem) {
+      selectedItem.classList.remove('is-selected');
+    }
+    selectedItem = item;
+    selectedItem.classList.add('is-selected');
+    var index = parseInt(item.getAttribute('data-index'), 10);
+    _updateSelectedIndicator(index);
+  }
+
+  function _updateSelectedIndicator(index) {
+    if (!trackerSelectedEl) {
+      return;
+    }
+    trackerSelectedEl.textContent = 'Selected: ' + index + ' of ' + items.length;
+  }
+
+  function _updateTracker(elapsedUnits) {
+    if (!trackerCountEl || !trackerUnitEl || !trackerPercentEl) {
+      return;
+    }
+    var totalUnits = items.length;
+    var percent = totalUnits ? (elapsedUnits / totalUnits) * 100 : 0;
+    trackerCountEl.textContent = elapsedUnits;
+    trackerUnitEl.textContent = unitText;
+    trackerPercentEl.textContent = percent.toFixed(1);
+  }
+
+  function _loadQuote() {
+    if (!quoteTextEl || !quoteAuthorEl) {
+      return;
+    }
+    var quotes = [
+      { text: 'Time is what we want most, but what we use worst.', author: 'William Penn' },
+      { text: 'The two most powerful warriors are patience and time.', author: 'Leo Tolstoy' },
+      { text: 'Time you enjoy wasting is not wasted time.', author: 'Bertrand Russell' },
+      { text: 'Lost time is never found again.', author: 'Benjamin Franklin' },
+      { text: 'Time is the most valuable thing a man can spend.', author: 'Theophrastus' },
+      { text: 'Time is the wisest counselor of all.', author: 'Pericles' },
+      { text: 'All we have to decide is what to do with the time that is given us.', author: 'J.R.R. Tolkien' },
+      { text: 'Better three hours too soon than a minute too late.', author: 'William Shakespeare' },
+      { text: 'A man who dares to waste one hour of time has not discovered the value of life.', author: 'Charles Darwin' },
+      { text: 'Time is money.', author: 'Benjamin Franklin' },
+      { text: 'The key is in not spending time, but in investing it.', author: 'Stephen R. Covey' },
+      { text: 'The bad news is time flies. The good news is you are the pilot.', author: 'Michael Altshuler' },
+      { text: 'You may delay, but time will not.', author: 'Benjamin Franklin' },
+      { text: 'Time brings all things to pass.', author: 'Aeschylus' },
+      { text: 'No man goes before his time. Unless the boss leaves early.', author: 'Groucho Marx' },
+      { text: 'Time is the longest distance between two places.', author: 'Tennessee Williams' },
+      { text: 'He who every morning plans the transactions of the day and follows out that plan carries a thread that will guide him.', author: 'Victor Hugo' },
+      { text: 'To live is so startling it leaves little time for anything else.', author: 'Emily Dickinson' },
+      { text: 'Time is a storm in which we are all lost.', author: 'William Carlos Williams' },
+      { text: 'There is one kind of robber whom the law does not strike at, and who steals what is most precious to men: time.', author: 'Napoleon Bonaparte' }
+    ];
+    var choice = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteTextEl.textContent = '\"' + choice.text + '\"';
+    quoteAuthorEl.textContent = choice.author;
   }
 
   function _handleExportChange(e) {

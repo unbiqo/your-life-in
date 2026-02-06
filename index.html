@@ -6,21 +6,23 @@
   <meta name="description" content="Enter your date of birth, to see your life in weeks. Based on the post by Tim Urban, from Wait by Why.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="weeks-favicon.png" sizes="32x32">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="your-life.css">
-  <style>
-    body {
-      margin: 8px 8px 0 calc(3rem + 8px);
-    }
-  </style>
 </head>
 <body>
   <div class="title-box">
-    <h1 class="title">Your Life in <label for="unitbox" class="unitbox-label visuallyhidden">Weeks</label></h1>
-    <select name="unitbox" class="unitbox" id="unitbox" required>
-      <option value="years">Years</option>
-      <option value="months">Months</option>
-      <option value="weeks" selected>Weeks</option>
-    </select>
+    <div class="title-left">
+      <h1 class="title">Your Life in <label for="unitbox" class="unitbox-label visuallyhidden">Weeks</label></h1>
+      <select name="unitbox" class="unitbox" id="unitbox" required>
+        <option value="years">Years</option>
+        <option value="months">Months</option>
+        <option value="weeks" selected>Weeks</option>
+      </select>
+    </div>
+    <div class="quote-box" aria-live="polite">
+      <p class="quote-text" id="quote-text"></p>
+      <p class="quote-author" id="quote-author"></p>
+    </div>
   </div>
   <form class="dob" action="#">
     <p class="instruction"><span class="print-hide">Enter your </span>Date of Birth</p>
@@ -84,6 +86,12 @@
         <span>85</span>
         <span>90</span>
       </div>
+    </div>
+    <div class="life-tracker" aria-live="polite">
+      <div class="tracker-value"><span id="life-count">0</span> <span id="life-unit">weeks</span></div>
+      <div class="tracker-sub">lived so far</div>
+      <div class="tracker-percent"><span id="life-percent">0</span>% of life gone</div>
+      <div class="tracker-selected" id="life-selected">Selected: —</div>
     </div>
     <li></li>
     <li></li>
