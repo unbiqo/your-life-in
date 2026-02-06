@@ -50,6 +50,12 @@
     <input type="text" class="year" id="year" placeholder="1999" pattern="\d{4}" required/>
   </form>
   <ol class="chart months group">
+    <div class="x-axis">
+      <label class="axis-label axis-label-x">Months<img src="images/arrow-right.svg" class="axis-arrow axis-arrow-x"/></label>
+    </div>
+    <div class="y-axis">
+      <label class="axis-label axis-label-y"><img src="images/arrow-left.svg" class="axis-arrow axis-arrow-y"/>Age</label>
+    </div>
     <div class="life-tracker" aria-live="polite">
       <div class="tracker-value"><span id="life-count">0</span> <span id="life-unit">months</span> / <span id="life-total">0</span></div>
       <div class="tracker-sub" id="life-sub">lived so far</div>

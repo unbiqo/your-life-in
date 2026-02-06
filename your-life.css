@@ -367,30 +367,40 @@ input:required:invalid.touched {
   float: left;
   border-radius: 2px;
 }
-.weeks--x-label {
+.axis-label {
   color: var(--ink);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
-.weeks--y-label {
-  color: var(--ink);
+.axis-label-x {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.axis-label-y {
   transform: rotate(-90deg);
-  font-size: 1.25rem;
   position: absolute;
   left: -118px;
   top: 78px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
-.weeks--x-arrow {
-  padding-left: 10px;
+.axis-arrow {
   vertical-align: bottom;
+}
+.axis-arrow-x {
+  padding-left: 8px;
+}
+.axis-arrow-y {
+  padding-right: 8px;
 }
 @media (max-width: 350px) {
-  .weeks--x-arrow {
+  .axis-arrow-x {
     display: none;
   }
-}
-.weeks--y-arrow {
-  padding-right: 10px;
-  vertical-align: bottom;
 }
 .weeks--x-markers span {
   position: absolute;
