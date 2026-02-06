@@ -15,12 +15,12 @@
     trackerTotalEl = document.getElementById('life-total'),
     trackerSubEl = document.getElementById('life-sub'),
     trackerPercentEl = document.getElementById('life-percent'),
-    trackerSelectedEl = document.getElementById('life-selected'),
+    noteToggleEl = document.getElementById('note-toggle'),
+    notePanelEl = document.getElementById('note-panel'),
+    noteCloseEl = document.getElementById('note-close'),
+    noteTextEl = document.getElementById('note-text'),
     quoteTextEl = document.getElementById('quote-text'),
     quoteAuthorEl = document.getElementById('quote-author'),
-    selectedItem = null,
-    isDragging = false,
-    dragMode = null,
     itemCount = 0,
     KEY = {
       UP: 38,
@@ -40,20 +40,19 @@
   if (exportEl) {
     exportEl.addEventListener('change', _handleExportChange);
   }
-  if (chartEl) {
-    chartEl.addEventListener('mousedown', _handleChartMousedown);
-    chartEl.addEventListener('mouseover', _handleChartMouseover);
-    chartEl.addEventListener('touchstart', _handleChartTouchStart, { passive: false });
-    chartEl.addEventListener('touchmove', _handleChartTouchMove, { passive: false });
-    chartEl.addEventListener('keydown', _handleChartKeydown);
-    document.addEventListener('mouseup', _handleChartMouseup);
-    document.addEventListener('mouseleave', _handleChartMouseup);
-    document.addEventListener('touchend', _handleChartMouseup);
+  if (noteToggleEl) {
+    noteToggleEl.addEventListener('click', _openNote);
+  }
+  if (noteCloseEl) {
+    noteCloseEl.addEventListener('click', _closeNote);
+  }
+  if (noteTextEl) {
+    noteTextEl.addEventListener('input', _autoResizeNote);
+    noteTextEl.addEventListener('keydown', _handleNoteKeydown);
   }
 
   // Ensure the month is unselected by default.
   monthEl.selectedIndex = -1;
-  _setItemMetadata();
 
   // Load default values
   _loadQuote();
@@ -191,141 +190,19 @@
     _handleDateChange();
   }
 
-  function _setItemMetadata() {
-    for (var i = 0; i < items.length; i++) {
-      var index = i + 1;
-      items[i].setAttribute('data-index', index);
-      items[i].setAttribute('tabindex', '0');
-      items[i].setAttribute('role', 'button');
-      items[i].setAttribute('aria-pressed', 'false');
-      items[i].setAttribute('aria-label', _buildItemLabel(index));
-    }
-  }
-
-  function _buildItemLabel(index) {
-    var singular = 'Unit';
-    if (unitText === 'weeks') {
-      singular = 'Week';
-    } else if (unitText === 'months') {
-      singular = 'Month';
-    } else if (unitText === 'years') {
-      singular = 'Year';
-    }
-    return singular + ' ' + index;
-  }
-
-  function _handleChartMousedown(e) {
-    if (e.target && e.target.tagName === 'LI') {
-      e.preventDefault();
-      isDragging = true;
-      dragMode = e.target.classList.contains('is-selected') ? 'deselect' : 'select';
-      _toggleItem(e.target, dragMode === 'select');
-    }
-  }
-
-  function _handleChartMouseover(e) {
-    if (!isDragging) {
-      return;
-    }
-    if (e.target && e.target.tagName === 'LI') {
-      _toggleItem(e.target, dragMode === 'select');
-    }
-  }
-
-  function _handleChartMouseup() {
-    if (isDragging) {
-      isDragging = false;
-      dragMode = null;
-    }
-  }
-
-  function _handleChartTouchStart(e) {
-    if (!e.target || e.target.tagName !== 'LI') {
-      return;
-    }
-    e.preventDefault();
-    isDragging = true;
-    dragMode = e.target.classList.contains('is-selected') ? 'deselect' : 'select';
-    _toggleItem(e.target, dragMode === 'select');
-  }
-
-  function _handleChartTouchMove(e) {
-    if (!isDragging) {
-      return;
-    }
-    var touch = e.touches[0];
-    if (!touch) {
-      return;
-    }
-    var element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (element && element.tagName === 'LI' && element.closest('.chart')) {
-      _toggleItem(element, dragMode === 'select');
-    }
-  }
-
-  function _handleChartKeydown(e) {
-    if (!e.target || e.target.tagName !== 'LI') {
-      return;
-    }
-    var key = e.keyCode || e.which;
-    if (key === 13 || key === 32) {
-      e.preventDefault();
-      var shouldSelect = !e.target.classList.contains('is-selected');
-      _toggleItem(e.target, shouldSelect);
-    }
-  }
-
-  function _toggleItem(item, shouldSelect) {
-    var isSelected = item.classList.contains('is-selected');
-    if (shouldSelect && isSelected) {
-      return;
-    }
-    if (!shouldSelect && !isSelected) {
-      return;
-    }
-    if (shouldSelect) {
-      item.classList.add('is-selected');
-      item.setAttribute('aria-pressed', 'true');
-      selectedItem = item;
-    } else {
-      item.classList.remove('is-selected');
-      item.setAttribute('aria-pressed', 'false');
-      if (selectedItem === item) {
-        selectedItem = null;
-      }
-    }
-    _updateSelectedIndicator();
-    _updateTracker(_dateIsValid() ? itemCount : 0);
-  }
-
-  function _updateSelectedIndicator() {
-    if (!trackerSelectedEl) {
-      return;
-    }
-    var selectedCount = _getSelectedCount();
-    trackerSelectedEl.textContent = 'Selected: ' + selectedCount + ' of ' + items.length;
-  }
-
   function _updateTracker(elapsedUnits) {
     if (!trackerCountEl || !trackerUnitEl || !trackerPercentEl || !trackerTotalEl) {
       return;
     }
     var totalUnits = items.length;
-    var selectedCount = _getSelectedCount();
-    var displayCount = selectedCount > 0 ? selectedCount : elapsedUnits;
-    var percent = totalUnits ? (displayCount / totalUnits) * 100 : 0;
-    trackerCountEl.textContent = displayCount;
+    var percent = totalUnits ? (elapsedUnits / totalUnits) * 100 : 0;
+    trackerCountEl.textContent = elapsedUnits;
     trackerUnitEl.textContent = unitText;
     trackerTotalEl.textContent = totalUnits;
     trackerPercentEl.textContent = percent.toFixed(1);
     if (trackerSubEl) {
-      trackerSubEl.textContent = selectedCount > 0 ? 'selected' : 'lived so far';
+      trackerSubEl.textContent = 'lived so far';
     }
-    _updateSelectedIndicator();
-  }
-
-  function _getSelectedCount() {
-    return document.querySelectorAll('.chart li.is-selected').length;
   }
 
   function _loadQuote() {
@@ -357,6 +234,37 @@
     var choice = quotes[Math.floor(Math.random() * quotes.length)];
     quoteTextEl.textContent = '\"' + choice.text + '\"';
     quoteAuthorEl.textContent = choice.author;
+  }
+
+  function _openNote() {
+    if (!notePanelEl || !noteTextEl) {
+      return;
+    }
+    notePanelEl.classList.remove('is-hidden');
+    _autoResizeNote();
+    noteTextEl.focus();
+  }
+
+  function _closeNote() {
+    if (!notePanelEl) {
+      return;
+    }
+    notePanelEl.classList.add('is-hidden');
+  }
+
+  function _handleNoteKeydown(e) {
+    if (e.keyCode === 13 && !e.shiftKey) {
+      e.preventDefault();
+      _closeNote();
+    }
+  }
+
+  function _autoResizeNote() {
+    if (!noteTextEl) {
+      return;
+    }
+    noteTextEl.style.height = 'auto';
+    noteTextEl.style.height = noteTextEl.scrollHeight + 'px';
   }
 
   function _handleExportChange(e) {

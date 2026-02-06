@@ -134,27 +134,11 @@ input:required:invalid.touched {
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.6);
   border: 1px solid var(--border);
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 .chart li.is-lived {
   background-image:
     linear-gradient(45deg, transparent 46%, rgba(141, 52, 28, 0.5) 47%, rgba(141, 52, 28, 0.5) 53%, transparent 54%),
     linear-gradient(-45deg, transparent 46%, rgba(141, 52, 28, 0.5) 47%, rgba(141, 52, 28, 0.5) 53%, transparent 54%);
-}
-.chart li:hover {
-  transform: scale(1.08);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(179, 74, 42, 0.2);
-}
-.chart li.is-selected {
-  border-color: var(--accent-dark);
-  box-shadow: 0 0 0 2px rgba(141, 52, 28, 0.35);
-  transform: scale(1.08);
-  background-color: rgba(179, 74, 42, 0.18);
-}
-.chart li:focus-visible {
-  outline: 2px solid var(--accent-dark);
-  outline-offset: 1px;
 }
 .x-axis {
   position: absolute;
@@ -207,6 +191,70 @@ input:required:invalid.touched {
   padding: 0.75rem 0.85rem;
   box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
   transform: rotate(0.8deg);
+}
+.note-toggle {
+  margin-top: 0.6rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(179, 74, 42, 0.12);
+  border: 1px solid rgba(179, 74, 42, 0.6);
+  color: var(--ink);
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+}
+.note-panel {
+  position: absolute;
+  top: 0;
+  left: calc((100% - 100vw) / 2);
+  width: clamp(220px, calc((100vw - 100%) / 2 - 140px), 420px);
+  min-height: 120px;
+  background: var(--panel);
+  border: 2px dashed rgba(179, 74, 42, 0.6);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.note-panel.is-hidden {
+  display: none;
+}
+.note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.note-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+.note-close {
+  font-family: inherit;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(42, 36, 29, 0.08);
+  border: 1px solid rgba(42, 36, 29, 0.5);
+  color: var(--ink);
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+}
+.note-text {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  resize: none;
+  overflow: hidden;
+  min-height: 60px;
+}
+.note-text:focus {
+  outline: none;
 }
 .tracker-value {
   font-size: 1.2rem;
@@ -407,6 +455,11 @@ input:required:invalid.touched {
     position: static;
     width: auto;
     margin: 1rem auto 0;
+  }
+  .note-panel {
+    position: static;
+    width: auto;
+    margin: 1rem auto;
   }
 }
 

@@ -51,8 +51,15 @@
       <div class="tracker-value"><span id="life-count">0</span> <span id="life-unit">years</span> / <span id="life-total">0</span></div>
       <div class="tracker-sub" id="life-sub">lived so far</div>
       <div class="tracker-percent"><span id="life-percent">0</span>% of life gone</div>
-      <div class="tracker-selected" id="life-selected">Selected: 0 of 0</div>
+      <button type="button" class="note-toggle" id="note-toggle">Add note</button>
     </div>
+    <aside class="note-panel is-hidden" id="note-panel">
+      <div class="note-header">
+        <span class="note-title">Note</span>
+        <button type="button" class="note-close" id="note-close">Close</button>
+      </div>
+      <textarea id="note-text" class="note-text" rows="3" placeholder="Write a note..."></textarea>
+    </aside>
     <li></li>
     <li></li>
     <li></li>
