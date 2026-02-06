@@ -132,9 +132,17 @@
     <li></li>
   </ol>
   <div class="credits">
-    <p>Based on the <a href="http://waitbutwhy.com/2014/05/life-weeks.html">Your Life in Weeks</a> post by Tim Urban, from <a href="http://waitbutwhy.com/">Wait But Why</a>.</p>
-    <p class="print-hide"><a href="https://github.com/bryanbraun/your-life">See the code on Github.</a></p>
+    <p>Based on the Your Life in Weeks post by Tim Urban, from Wait But Why.</p>
     <p class="print-hide"><a href="javascript:window.print()">Print this page.</a></p>
+    <p class="print-hide">
+      <label for="export-format" class="export-label">Export to</label>
+      <select id="export-format" class="export-select">
+        <option value="" selected disabled>Choose format</option>
+        <option value="csv">CSV</option>
+        <option value="json">JSON</option>
+        <option value="xlsm">XLSM</option>
+      </select>
+    </p>
   </div>
   <script src="your-life.js"></script>
 </body>

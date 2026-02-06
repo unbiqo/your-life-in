@@ -8,6 +8,7 @@
     unitboxEl = document.getElementById('unitbox'),
     unitText = document.querySelector('.unitbox-label').textContent.toLowerCase(),
     items = document.querySelectorAll('.chart li'),
+    exportEl = document.getElementById('export-format'),
     itemCount,
     COLOR = 'red',
     KEY = {
@@ -25,6 +26,9 @@
   dayEl.addEventListener('input', _handleDateChange);
   dayEl.addEventListener('blur', _unhideValidationStyles);
   dayEl.addEventListener('keydown', _handleUpdown);
+  if (exportEl) {
+    exportEl.addEventListener('change', _handleExportChange);
+  }
 
   // Ensure the month is unselected by default.
   monthEl.selectedIndex = -1;
@@ -160,5 +164,209 @@
       dayEl.value = DOB.day
     }
     _handleDateChange();
+  }
+
+  function _handleExportChange(e) {
+    var format = e.target.value;
+    if (!format) {
+      return;
+    }
+
+    var payload = _buildExportPayload();
+    var tableData = _buildTableRows(payload);
+    var filename = _buildFilename(format);
+
+    if (format === 'csv') {
+      _downloadFile(_buildCsv(tableData), filename, 'text/csv;charset=utf-8');
+    } else if (format === 'json') {
+      _downloadFile(JSON.stringify(payload, null, 2), filename, 'application/json');
+    } else if (format === 'xlsm') {
+      _downloadFile(_buildSpreadsheetXml(tableData), filename, 'application/vnd.ms-excel');
+    }
+
+    e.target.selectedIndex = 0;
+  }
+
+  function _buildExportPayload() {
+    var now = new Date();
+    var dob = _dateIsValid() ? _getDateOfBirth() : null;
+    var elapsedUnits = _dateIsValid() ? calculateElapsedTime() : 0;
+    var totalUnits = items.length;
+
+    return {
+      meta: {
+        unit: unitText,
+        generated_at: now.toISOString(),
+        date_of_birth: dob ? _formatDate(dob) : '',
+        elapsed_units: elapsedUnits,
+        total_units: totalUnits
+      },
+      rows: _buildDataRows(elapsedUnits, totalUnits)
+    };
+  }
+
+  function _buildDataRows(elapsedUnits, totalUnits) {
+    var rows = [];
+    for (var i = 0; i < totalUnits; i++) {
+      var row = {
+        index: i + 1,
+        elapsed: i < elapsedUnits
+      };
+
+      if (unitText === 'weeks') {
+        row.age_year = Math.floor(i / 52);
+        row.week_of_year = (i % 52) + 1;
+      } else if (unitText === 'months') {
+        row.age_year = Math.floor(i / 12);
+        row.month_of_year = (i % 12) + 1;
+      } else if (unitText === 'years') {
+        row.age_year = i;
+      }
+
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function _buildTableRows(payload) {
+    var columns = [
+      'unit',
+      'generated_at',
+      'date_of_birth',
+      'elapsed_units',
+      'total_units',
+      'index',
+      'elapsed'
+    ];
+
+    if (unitText === 'weeks') {
+      columns.push('age_year', 'week_of_year');
+    } else if (unitText === 'months') {
+      columns.push('age_year', 'month_of_year');
+    } else if (unitText === 'years') {
+      columns.push('age_year');
+    }
+
+    var rows = [];
+    for (var i = 0; i < payload.rows.length; i++) {
+      var row = payload.rows[i];
+      rows.push({
+        unit: payload.meta.unit,
+        generated_at: payload.meta.generated_at,
+        date_of_birth: payload.meta.date_of_birth,
+        elapsed_units: payload.meta.elapsed_units,
+        total_units: payload.meta.total_units,
+        index: row.index,
+        elapsed: row.elapsed ? 'yes' : 'no',
+        age_year: row.age_year,
+        week_of_year: row.week_of_year,
+        month_of_year: row.month_of_year
+      });
+    }
+
+    return {
+      columns: columns,
+      rows: rows
+    };
+  }
+
+  function _buildCsv(tableData) {
+    var lines = [];
+    lines.push(tableData.columns.join(','));
+    for (var i = 0; i < tableData.rows.length; i++) {
+      var row = tableData.rows[i];
+      var line = tableData.columns.map(function (column) {
+        return _escapeCsvValue(row[column]);
+      }).join(',');
+      lines.push(line);
+    }
+    return lines.join('\n');
+  }
+
+  function _buildSpreadsheetXml(tableData) {
+    var xml = '';
+    xml += '<?xml version="1.0"?>\n';
+    xml += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+    xml += 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+    xml += '  <Worksheet ss:Name="Your Life">\n';
+    xml += '    <Table>\n';
+    xml += '      <Row>' + tableData.columns.map(function (column) {
+      return '<Cell><Data ss:Type="String">' + _escapeXml(column) + '</Data></Cell>';
+    }).join('') + '</Row>\n';
+
+    for (var i = 0; i < tableData.rows.length; i++) {
+      var row = tableData.rows[i];
+      var rowXml = tableData.columns.map(function (column) {
+        var value = row[column];
+        var type = (typeof value === 'number') ? 'Number' : 'String';
+        if (value === null || value === undefined) {
+          value = '';
+          type = 'String';
+        }
+        return '<Cell><Data ss:Type="' + type + '">' + _escapeXml(String(value)) + '</Data></Cell>';
+      }).join('');
+      xml += '      <Row>' + rowXml + '</Row>\n';
+    }
+
+    xml += '    </Table>\n';
+    xml += '  </Worksheet>\n';
+    xml += '</Workbook>';
+    return xml;
+  }
+
+  function _downloadFile(content, filename, mimeType) {
+    var blob = new Blob([content], { type: mimeType });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(link.href);
+      link.remove();
+    }, 0);
+  }
+
+  function _buildFilename(extension) {
+    var stamp = _formatDateForFilename(new Date());
+    return 'your-life-' + unitText + '-' + stamp + '.' + extension;
+  }
+
+  function _formatDate(date) {
+    return date.getFullYear() + '-' + _pad2(date.getMonth() + 1) + '-' + _pad2(date.getDate());
+  }
+
+  function _formatDateForFilename(date) {
+    return date.getFullYear() +
+      _pad2(date.getMonth() + 1) +
+      _pad2(date.getDate()) +
+      '-' +
+      _pad2(date.getHours()) +
+      _pad2(date.getMinutes()) +
+      _pad2(date.getSeconds());
+  }
+
+  function _pad2(value) {
+    return value < 10 ? '0' + value : String(value);
+  }
+
+  function _escapeCsvValue(value) {
+    if (value === null || value === undefined) {
+      return '';
+    }
+    var stringValue = String(value);
+    if (/[",\n]/.test(stringValue)) {
+      return '"' + stringValue.replace(/"/g, '""') + '"';
+    }
+    return stringValue;
+  }
+
+  function _escapeXml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
   }
 })();

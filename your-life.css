@@ -109,6 +109,17 @@ input:required:invalid.touched {
 .credits a:visited {
   color: #aaaaaa;
 }
+.export-label {
+  margin-right: 0.25rem;
+}
+.export-select {
+  font-family: inherit;
+  font-size: 0.9em;
+  color: #666666;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  padding: 0.1rem 0.25rem;
+}
 
 
 
