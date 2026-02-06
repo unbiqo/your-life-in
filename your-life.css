@@ -173,6 +173,21 @@ input:required:invalid.touched {
   border: 2px dashed rgba(179, 74, 42, 0.6);
   padding: 0.75rem 0.9rem;
   background: rgba(255, 247, 230, 0.8);
+  position: relative;
+}
+.quote-refresh {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(42, 36, 29, 0.08);
+  border: 1px solid rgba(42, 36, 29, 0.5);
+  color: var(--ink);
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
 }
 .quote-text {
   font-style: italic;
@@ -511,8 +526,7 @@ input:required:invalid.touched {
   .life-tracker,
   .note-panel,
   .note-toggle,
-  .quote-box,
-  .title-box {
+  .quote-box {
     display: none !important;
   }
 }
