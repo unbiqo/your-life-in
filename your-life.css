@@ -118,7 +118,8 @@ body {
   width: 2em;
 }
 .year {
-  width: 3em;
+  width: 4.5em;
+  letter-spacing: 0.05em;
 }
 input:required:invalid.touched {
   border: 2px solid red;
@@ -505,5 +506,13 @@ input:required:invalid.touched {
 
   .print-hide {
     display: none;
+  }
+
+  .life-tracker,
+  .note-panel,
+  .note-toggle,
+  .quote-box,
+  .title-box {
+    display: none !important;
   }
 }
